@@ -73,7 +73,7 @@ export default function Stage3Results({ commonSpecs, buyerISQs }: Stage3ResultsP
               Buyer ISQs
             </h3>
             <div className="text-sm text-amber-700 font-medium">
-              First 2 common specs with up to 8 options each
+             Based on Seller Specs & Website Benchmarking
             </div>
           </div>
           <p className="text-sm text-amber-700 mb-6">
