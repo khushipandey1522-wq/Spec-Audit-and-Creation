@@ -28,9 +28,6 @@ export default function Stage2Results({ isqs }: Stage2ResultsProps) {
                 <h3 className="text-xl font-bold text-red-900">Config ISQ</h3>
                 <p className="text-sm text-red-700 mt-1">Most important specification affecting price and product variation</p>
               </div>
-              <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm">
-                {isqs.config.options.length} options
-              </div>
             </div>
             <div className="mb-3">
               <p className="font-bold text-lg text-gray-900">{isqs.config.name}</p>
