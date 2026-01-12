@@ -1674,6 +1674,7 @@ function findCommonSpecsLocally(
 }
 
 // SIMPLE: Get Buyer ISQs - First 2 from Common Specifications
+// SIMPLE: Get Buyer ISQs - First 2 from Common Specifications
 export function selectStage3BuyerISQs(
   commonSpecs: Array<{ spec_name: string; options: string[]; category: string }>,
   stage1Specs: { spec_name: string; options: string[]; tier?: string }[]
@@ -1685,7 +1686,7 @@ export function selectStage3BuyerISQs(
     return [];
   }
   
-  // SIMPLE: Take first 2 specs as they come from commonSpecs
+  // Take first 2 specs from commonSpecs
   const topSpecs = commonSpecs.slice(0, 2);
   console.log(`📦 Taking first ${topSpecs.length} specs for Buyer ISQs`);
   
@@ -1693,53 +1694,35 @@ export function selectStage3BuyerISQs(
   
   topSpecs.forEach(spec => {
     console.log(`\n🔧 Processing Buyer ISQ: ${spec.spec_name}`);
-    console.log(`   Original options from common:`, spec.options);
     
-    // Step 1: Remove "No common options available" message
+    // Step 1: Start with common options (remove "No common options available")
     let finalOptions = spec.options.filter(opt => 
       !opt.toLowerCase().includes('no common options available')
     );
     
-    console.log(`   After removing 'no common options': ${finalOptions.length} options`);
+    console.log(`   Common options: ${finalOptions.length}`);
     
-    // Step 2: If we have NO options at all, check Stage 1
-    if (finalOptions.length === 0) {
-      console.log(`   No options in common, checking Stage 1...`);
-      const stage1Spec = stage1Specs.find(s => 
-        s.spec_name === spec.spec_name
-      );
-      
-      if (stage1Spec && stage1Spec.options.length > 0) {
-        // Take up to 8 options from Stage 1
-        finalOptions = stage1Spec.options.slice(0, 8);
-        console.log(`   Added ${finalOptions.length} options from Stage 1`);
-      }
-    }
+    // Step 2: Get matching Stage 1 spec
+    const stage1Spec = stage1Specs.find(s => 
+      s.spec_name === spec.spec_name
+    );
     
-    // Step 3: If we have SOME options but less than 8, add more from Stage 1
-    if (finalOptions.length > 0 && finalOptions.length < 8) {
-      const stage1Spec = stage1Specs.find(s => 
-        s.spec_name === spec.spec_name
-      );
+    if (stage1Spec) {
+      console.log(`   Found Stage 1 spec with ${stage1Spec.options.length} options`);
       
-      if (stage1Spec) {
-        // Find options from Stage 1 that are NOT already in finalOptions
-        const additionalOptions = stage1Spec.options.filter(opt => {
-          const lowerOpt = opt.trim().toLowerCase();
-          return !finalOptions.some(existing => 
-            existing.trim().toLowerCase() === lowerOpt
-          );
-        });
+      // Step 3: Add ALL options from Stage 1 (but remove duplicates)
+      stage1Spec.options.forEach(option => {
+        const lowerOption = option.trim().toLowerCase();
+        const alreadyExists = finalOptions.some(existing => 
+          existing.trim().toLowerCase() === lowerOption
+        );
         
-        // Add only as many as needed to reach 8
-        const needed = 8 - finalOptions.length;
-        const toAdd = additionalOptions.slice(0, needed);
-        
-        if (toAdd.length > 0) {
-          console.log(`   Adding ${toAdd.length} more options from Stage 1`);
-          finalOptions = [...finalOptions, ...toAdd];
+        if (!alreadyExists && finalOptions.length < 8) {
+          finalOptions.push(option);
         }
-      }
+      });
+    } else {
+      console.log(`   No matching Stage 1 spec found`);
     }
     
     // Step 4: Ensure max 8 options
